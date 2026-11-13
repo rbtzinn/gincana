@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Admin · Gincana</title>
+<style>
+  :root{--bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--muted:#6e6e73;--line:#d2d2d7;--blue:#0071e3;--red:#ff3b30;--green:#34c759}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:560px;margin:0 auto;padding:max(28px,env(safe-area-inset-top)) 18px 40px}
+  .centro{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .card{background:var(--card);border-radius:24px;padding:24px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 10px 30px rgba(0,0,0,.05)}
+  .login{width:100%;max-width:380px;text-align:center;padding:36px 26px}
+  .login .cadeado{width:64px;height:64px;border-radius:20px;margin:0 auto 18px;background:#f0f0f3;display:grid;place-items:center;font-size:30px}
+  h1{font-size:28px;font-weight:700;letter-spacing:-.02em}
+  h2{font-size:20px;font-weight:700;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:15px;margin-top:6px}
+  input{width:100%;height:52px;border-radius:14px;border:1px solid var(--line);background:#fafafc;padding:0 16px;font-size:17px;font-family:inherit;color:var(--text);outline:none;transition:.2s;-webkit-appearance:none;appearance:none}
+  input:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 4px rgba(0,113,227,.15)}
+  .erro-txt{color:var(--red);font-size:13px;min-height:18px;margin-top:8px}
+  .btn{height:48px;padding:0 18px;border:0;border-radius:14px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;transition:transform .1s,opacity .2s,background .2s}
+  .btn:active{transform:scale(.97)}
+  .btn:disabled{opacity:.5}
+  .azul{background:var(--blue);color:#fff}
+  .cinza{background:#ececf0;color:var(--text)}
+  .vermelho{background:#fff0ef;color:var(--red)}
+  .bloco{width:100%}
+  .topo{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+  .topo .btn{height:38px;font-size:14px;padding:0 14px}
+  .resumo{display:flex;align-items:baseline;gap:8px;margin:4px 0 14px}
+  .resumo b{font-size:40px;letter-spacing:-.03em}
+  .barra{height:8px;border-radius:99px;background:#ececf0;overflow:hidden;margin-bottom:6px}
+  .barra i{display:block;height:100%;background:var(--blue);border-radius:99px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+  .lista{margin-top:18px;display:flex;flex-direction:column}
+  .item{display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid #ececf0;animation:surgir .35s ease both}
+  @keyframes surgir{from{opacity:0;transform:translateY(6px)}}
+  .item:first-child{border-top:0}
+  .num{width:36px;height:36px;border-radius:12px;background:#eef5ff;color:var(--blue);font-weight:700;display:grid;place-items:center;flex-shrink:0}
+  .livre .num{background:#f2f2f5;color:#a1a1a6}
+  .info{flex:1;min-width:0}
+  .info strong{display:block;font-size:17px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .info small{color:var(--muted);font-size:13px}
+  .livre .info strong{color:#a1a1a6;font-weight:500}
+  .acoes{display:flex;gap:6px}
+  .icone-btn{width:38px;height:38px;border-radius:12px;border:0;background:#f2f2f5;cursor:pointer;display:grid;place-items:center;transition:background .2s,transform .1s}
+  .icone-btn:active{transform:scale(.92)}
+  .icone-btn svg{width:18px;height:18px;stroke:#3a3a3c;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .icone-btn.del svg{stroke:var(--red)}
+  .secao{margin-top:16px}
+  .qr-box{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+  .qr-box canvas{width:220px;height:220px;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 1px #ececf0}
+  .link{font-size:14px;color:var(--muted);word-break:break-all}
+  .linha-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .perigo{margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  /* modal */
+  .fundo{position:fixed;inset:0;background:rgba(0,0,0,.28);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:20}
+  .fundo.aberto{opacity:1;pointer-events:auto}
+  .modal{width:100%;max-width:400px;background:#fff;border-radius:26px;padding:26px 22px 20px;transform:translateY(30px);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+  .fundo.aberto .modal{transform:none}
+  @media(min-width:600px){.fundo{align-items:center}}
+  .modal h3{font-size:20px;font-weight:700;text-align:center}
+  .modal p{color:var(--muted);font-size:15px;text-align:center;margin:8px 0 18px}
+  .modal .btns{display:flex;gap:10px;margin-top:14px}
+  .modal .btns .btn{flex:1}
+  /* toast */
+  .toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translate(-50%,30px);background:rgba(29,29,31,.92);color:#fff;padding:12px 18px;border-radius:14px;font-size:15px;font-weight:500;opacity:0;transition:.3s;z-index:30;pointer-events:none;white-space:nowrap}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .escondido{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<section id="telaLogin" class="centro escondido">
+  <form class="card login" id="formLogin">
+    <div class="cadeado">🔒</div>
+    <h1>Área do admin</h1>
+    <p class="sub">Digite a senha para ver os ganhadores</p>
+    <div style="margin-top:22px"><input id="senha" type="password" placeholder="Senha" autocomplete="current-password"></div>
+    <div class="erro-txt" id="erroLogin"></div>
+    <button class="btn azul bloco" id="btnLogin" type="submit">Entrar</button>
+  </form>
+</section>
+
+<!-- PAINEL -->
+<section id="telaPainel" class="wrap escondido">
+  <div class="topo">
+    <h1>Ganhadores</h1>
+    <button class="btn cinza" id="btnSair">Sair</button>
+  </div>
+
+  <div class="card">
+    <div class="resumo"><b id="qtd">0</b><span class="sub" id="qtdTxt">de 5 vagas preenchidas</span></div>
+    <div class="barra"><i id="barra" style="width:0"></i></div>
+    <div class="lista" id="lista"></div>
+  </div>
+
+  <div class="card secao">
+    <div class="qr-box">
+      <h2>QR code da gincana</h2>
+      <canvas id="qr" width="660" height="660"></canvas>
+      <div class="link" id="linkPublico"></div>
+      <div class="linha-btns">
+        <button class="btn azul" id="btnBaixar">Baixar QR code</button>
+        <button class="btn cinza" id="btnCopiar">Copiar link</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card secao perigo">
+    <div><h2>Zerar gincana</h2><p class="sub">Apaga todos os nomes e libera as vagas</p></div>
+    <button class="btn vermelho" id="btnZerar">Zerar</button>
+  </div>
+</section>
+
+<!-- MODAL -->
+<div class="fundo" id="fundo">
+  <div class="modal" id="modal"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, doc, onSnapshot, updateDoc, deleteDoc, writeBatch }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { firebaseConfig, ADMIN_EMAIL, TOTAL_VAGAS } from "./firebase-config.js";
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+setPersistence(auth, browserLocalPersistence);
+
+let pararLista = null, vencedores = {};
+
+/* ---------- toast e modal ---------- */
+let tToast;
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(tToast); tToast = setTimeout(() => t.classList.remove("on"), 2200); }
+function abrirModal(html) { $("modal").innerHTML = html; $("fundo").classList.add("aberto"); }
+function fecharModal() { $("fundo").classList.remove("aberto"); }
+$("fundo").addEventListener("click", e => { if (e.target.id === "fundo") fecharModal(); });
+
+function confirmar({ titulo, texto, botao }) {
+  return new Promise(res => {
+    abrirModal(`<h3>${titulo}</h3><p>${texto}</p>
+      <div class="btns"><button class="btn cinza" id="mNao">Cancelar</button><button class="btn vermelho" id="mSim">${botao}</button></div>`);
+    $("mNao").onclick = () => { fecharModal(); res(false); };
+    $("mSim").onclick = () => { fecharModal(); res(true); };
+  });
+}
+
+/* ---------- login ---------- */
+onAuthStateChanged(auth, user => {
+  if (user) { $("telaLogin").classList.add("escondido"); $("telaPainel").classList.remove("escondido"); iniciarPainel(); }
+  else { if (pararLista) pararLista(); $("telaPainel").classList.add("escondido"); $("telaLogin").classList.remove("escondido"); setTimeout(() => $("senha").focus(), 100); }
+});
+
+$("formLogin").addEventListener("submit", async e => {
+  e.preventDefault();
+  const senha = $("senha").value;
+  if (!senha) { $("erroLogin").textContent = "Digite a senha."; return; }
+  $("btnLogin").disabled = true; $("btnLogin").textContent = "Entrando…"; $("erroLogin").textContent = "";
+  try { await signInWithEmailAndPassword(auth, ADMIN_EMAIL, senha); $("senha").value = ""; }
+  catch { $("erroLogin").textContent = "Senha incorreta."; }
+  $("btnLogin").disabled = false; $("btnLogin").textContent = "Entrar";
+});
+$("btnSair").onclick = () => signOut(auth);
+
+/* ---------- painel ---------- */
+function iniciarPainel() {
+  desenharQR();
+  if (pararLista) pararLista();
+  pararLista = onSnapshot(collection(db, "vencedores"), snap => {
+    vencedores = {};
+    snap.forEach(d => vencedores[d.id] = d.data());
+    render();
+  }, () => toast("Erro ao carregar a lista"));
+}
+
+function hora(ts) {
+  if (!ts || !ts.toDate) return "Chegou agora";
+  return "Chegou às " + ts.toDate().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
+
+const svgEditar = `<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
+const svgLixo = `<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>`;
+
+function render() {
+  const total = Object.keys(vencedores).length;
+  $("qtd").textContent = total;
+  $("qtdTxt").textContent = `de ${TOTAL_VAGAS} vagas preenchidas`;
+  $("barra").style.width = (total / TOTAL_VAGAS * 100) + "%";
+  let h = "";
+  for (let i = 1; i <= TOTAL_VAGAS; i++) {
+    const v = vencedores[String(i)];
+    h += v
+      ? `<div class="item"><div class="num">${i}</div>
+          <div class="info"><strong>${esc(v.nome)}</strong><small>${hora(v.criadoEm)}</small></div>
+          <div class="acoes">
+            <button class="icone-btn" data-editar="${i}" aria-label="Editar">${svgEditar}</button>
+            <button class="icone-btn del" data-excluir="${i}" aria-label="Excluir">${svgLixo}</button>
+          </div></div>`
+      : `<div class="item livre"><div class="num">${i}</div><div class="info"><strong>Vaga livre</strong><small>Aguardando</small></div></div>`;
+  }
+  $("lista").innerHTML = h;
+}
+
+$("lista").addEventListener("click", async e => {
+  const ed = e.target.closest("[data-editar]"), ex = e.target.closest("[data-excluir]");
+  if (ed) editar(ed.dataset.editar);
+  if (ex) {
+    const v = vencedores[ex.dataset.excluir];
+    const ok = await confirmar({ titulo: "Excluir ganhador?", texto: `${esc(v.nome)} sai da lista e a vaga ${ex.dataset.excluir} fica livre de novo.`, botao: "Excluir" });
+    if (!ok) return;
+    try { await deleteDoc(doc(db, "vencedores", ex.dataset.excluir)); toast("Ganhador excluído"); }
+    catch { toast("Não foi possível excluir"); }
+  }
+});
+
+function editar(vaga) {
+  const v = vencedores[vaga];
+  abrirModal(`<h3>Editar vaga ${vaga}</h3><p>Corrija o nome do ganhador</p>
+    <input id="mNome" maxlength="40" value="${esc(v.nome)}">
+    <div class="erro-txt" id="mErro"></div>
+    <div class="btns"><button class="btn cinza" id="mNao">Cancelar</button><button class="btn azul" id="mSim">Salvar</button></div>`);
+  const inp = $("mNome"); setTimeout(() => { inp.focus(); inp.select(); }, 250);
+  $("mNao").onclick = fecharModal;
+  const salvar = async () => {
+    const nome = inp.value.trim().replace(/\s+/g, " ");
+    if (nome.length < 2) { $("mErro").textContent = "O nome precisa ter pelo menos 2 letras."; return; }
+    $("mSim").disabled = true;
+    try { await updateDoc(doc(db, "vencedores", vaga), { nome }); fecharModal(); toast("Nome atualizado"); }
+    catch { $("mErro").textContent = "Não foi possível salvar."; $("mSim").disabled = false; }
+  };
+  $("mSim").onclick = salvar;
+  inp.addEventListener("keydown", e => { if (e.key === "Enter") salvar(); });
+}
+
+$("btnZerar").onclick = async () => {
+  if (!Object.keys(vencedores).length) return toast("A lista já está vazia");
+  const ok = await confirmar({ titulo: "Zerar a gincana?", texto: "Todos os nomes serão apagados e as 5 vagas ficam livres. Não dá para desfazer.", botao: "Zerar tudo" });
+  if (!ok) return;
+  try {
+    const b = writeBatch(db);
+    Object.keys(vencedores).forEach(id => b.delete(doc(db, "vencedores", id)));
+    await b.commit(); toast("Gincana zerada");
+  } catch { toast("Não foi possível zerar"); }
+};
+
+/* ---------- QR code ---------- */
+const linkPublico = new URL("./", location.href).href;
+function desenharQR() {
+  $("linkPublico").textContent = linkPublico;
+  const qr = qrcode(0, "M"); qr.addData(linkPublico); qr.make();
+  const n = qr.getModuleCount(), cv = $("qr"), ctx = cv.getContext("2d");
+  const margem = 4, cel = Math.floor(cv.width / (n + margem * 2)), off = Math.floor((cv.width - cel * n) / 2);
+  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, cv.width, cv.height); ctx.fillStyle = "#1d1d1f";
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) ctx.fillRect(off + c * cel, off + r * cel, cel, cel);
+}
+$("btnBaixar").onclick = () => { const a = document.createElement("a"); a.download = "qrcode-gincana.png"; a.href = $("qr").toDataURL("image/png"); a.click(); };
+$("btnCopiar").onclick = async () => { try { await navigator.clipboard.writeText(linkPublico); toast("Link copiado"); } catch { toast(linkPublico); } };
+</script>
+</body>
+</html>

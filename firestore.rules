@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Cada vaga é um documento fixo: vencedores/1 ... vencedores/5.
+    // "create" só funciona se o documento ainda não existe,
+    // então nunca passa de 5 ganhadores, mesmo com duas pessoas ao mesmo tempo.
+    match /vencedores/{vaga} {
+      allow read: if true;
+
+      allow create: if vaga in ['1', '2', '3', '4', '5']
+        && request.resource.data.keys().hasOnly(['nome', 'vaga', 'criadoEm', 'dispositivo'])
+        && request.resource.data.nome is string
+        && request.resource.data.nome.size() >= 2
+        && request.resource.data.nome.size() <= 40
+        && request.resource.data.criadoEm == request.time;
+
+      // Só o admin logado edita e exclui
+      allow update, delete: if request.auth != null
+        && request.auth.token.email == 'admin@gincana.com';
+    }
+  }
+}

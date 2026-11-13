@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f5f5f7">
+<title>Você ganhou!</title>
+<style>
+  :root{
+    --bg:#f5f5f7; --card:#ffffff; --text:#1d1d1f; --muted:#6e6e73;
+    --line:#d2d2d7; --blue:#0071e3; --blue-press:#0062c4; --green:#34c759; --red:#ff3b30;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--text);
+    min-height:100dvh; display:flex; align-items:center; justify-content:center;
+    padding:max(24px,env(safe-area-inset-top)) 20px max(24px,env(safe-area-inset-bottom));
+    -webkit-font-smoothing:antialiased;
+  }
+  .card{
+    width:100%; max-width:420px; background:var(--card); border-radius:32px;
+    padding:40px 28px 32px; text-align:center;
+    box-shadow:0 1px 2px rgba(0,0,0,.04),0 12px 40px rgba(0,0,0,.06);
+    animation:entrar .6s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes entrar{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+
+  .icone{
+    width:84px;height:84px;margin:0 auto 22px;border-radius:24px;
+    display:grid;place-items:center;font-size:42px;
+    background:linear-gradient(145deg,#fff6d6,#ffe08a);
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.04);
+  }
+  .icone.ok{background:linear-gradient(145deg,#dcf8e3,#a8ecbb)}
+  .icone.fim{background:linear-gradient(145deg,#f2f2f5,#e3e3e8)}
+
+  h1{font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.02em}
+  p.sub{margin-top:10px;font-size:17px;line-height:1.45;color:var(--muted)}
+
+  .vagas{margin:26px 0 6px;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .pontos{display:flex;gap:8px}
+  .ponto{width:12px;height:12px;border-radius:50%;background:var(--blue);transition:background .4s,transform .4s}
+  .ponto.usado{background:var(--line);transform:scale(.85)}
+  .vagas small{font-size:14px;color:var(--muted);font-weight:500}
+
+  form{margin-top:22px;display:flex;flex-direction:column;gap:12px}
+  .campo{position:relative}
+  .campo input{
+    width:100%; height:58px; border-radius:16px; border:1px solid var(--line);
+    background:#fafafc; padding:22px 18px 6px; font-size:17px; color:var(--text);
+    font-family:inherit; outline:none; transition:border-color .2s, box-shadow .2s, background .2s;
+    -webkit-appearance:none; appearance:none;
+  }
+  .campo label{
+    position:absolute; left:19px; top:50%; transform:translateY(-50%);
+    font-size:17px; color:#86868b; pointer-events:none; transition:all .18s ease;
+  }
+  .campo input:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 4px rgba(0,113,227,.15)}
+  .campo input:focus + label,
+  .campo input:not(:placeholder-shown) + label{top:16px;font-size:12px;transform:none;color:var(--muted)}
+  .campo.erro input{border-color:var(--red);box-shadow:0 0 0 4px rgba(255,59,48,.12)}
+  .msg-erro{min-height:18px;font-size:13px;color:var(--red);text-align:left;padding-left:4px}
+
+  button.principal{
+    height:56px; border:0; border-radius:16px; background:var(--blue); color:#fff;
+    font-size:17px; font-weight:600; font-family:inherit; cursor:pointer;
+    transition:background .2s, transform .1s, opacity .2s; display:flex;align-items:center;justify-content:center;gap:10px;
+  }
+  button.principal:active{transform:scale(.98);background:var(--blue-press)}
+  button.principal:disabled{opacity:.55;cursor:default}
+  .spinner{width:18px;height:18px;border-radius:50%;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;animation:girar .7s linear infinite}
+  .carregando .spinner{border-color:var(--line);border-top-color:var(--blue);width:28px;height:28px;margin:30px auto}
+  @keyframes girar{to{transform:rotate(360deg)}}
+
+  .numero{
+    display:inline-block;margin-top:20px;padding:8px 16px;border-radius:999px;
+    background:#e8f6ec;color:#1f8a3b;font-weight:600;font-size:15px;
+  }
+  .nome-destaque{font-weight:600;color:var(--text)}
+  .rodape{margin-top:26px;font-size:12px;color:#a1a1a6}
+
+  .check{width:84px;height:84px;margin:0 auto 22px}
+  .check circle{stroke:var(--green);stroke-width:4;fill:none;stroke-dasharray:240;stroke-dashoffset:240;animation:tracar .6s ease forwards}
+  .check path{stroke:var(--green);stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60;animation:tracar .4s .45s ease forwards}
+  @keyframes tracar{to{stroke-dashoffset:0}}
+
+  .tremer{animation:tremer .4s}
+  @keyframes tremer{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
+  @media (max-width:360px){ h1{font-size:29px} .card{padding:32px 20px 26px} }
+</style>
+</head>
+<body>
+<main class="card" id="app">
+  <div class="carregando"><div class="spinner"></div></div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, doc, onSnapshot, runTransaction, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { firebaseConfig, TOTAL_VAGAS } from "./firebase-config.js";
+
+const app = document.getElementById("app");
+const CHAVE = "gincana_participacao";
+let ocupadas = 0, estado = "carregando", enviando = false, db = null;
+
+const lerParticipacao = () => { try { return JSON.parse(localStorage.getItem(CHAVE)); } catch { return null; } };
+const salvarParticipacao = d => { try { localStorage.setItem(CHAVE, JSON.stringify(d)); } catch {} };
+const idDispositivo = () => {
+  try {
+    let id = localStorage.getItem("gincana_dispositivo");
+    if (!id) { id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random(); localStorage.setItem("gincana_dispositivo", id); }
+    return id;
+  } catch { return "sem-storage"; }
+};
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+
+function pontos() {
+  let h = "";
+  for (let i = 0; i < TOTAL_VAGAS; i++) h += `<span class="ponto ${i < ocupadas ? "usado" : ""}"></span>`;
+  const restam = TOTAL_VAGAS - ocupadas;
+  return `<div class="vagas"><div class="pontos">${h}</div>
+    <small>${restam === 1 ? "Resta só 1 vaga!" : `Restam ${restam} de ${TOTAL_VAGAS} vagas`}</small></div>`;
+}
+
+function telaFormulario() {
+  estado = "form";
+  app.innerHTML = `
+    <div class="icone">🎉</div>
+    <h1>Você ganhou!</h1>
+    <p class="sub">Só os ${TOTAL_VAGAS} primeiros levam. Coloque seu nome para garantir o prêmio.</p>
+    <div id="vagas">${pontos()}</div>
+    <form id="form" novalidate autocomplete="off">
+      <div class="campo" id="campo">
+        <input id="nome" type="text" placeholder=" " maxlength="40" autocapitalize="words" enterkeyhint="send">
+        <label for="nome">Seu nome</label>
+      </div>
+      <div class="msg-erro" id="erro"></div>
+      <button class="principal" id="btn" type="submit">Garantir meu prêmio</button>
+    </form>
+    <p class="rodape">Uma participação por celular</p>`;
+  document.getElementById("form").addEventListener("submit", enviar);
+  document.getElementById("nome").addEventListener("input", () => {
+    document.getElementById("campo").classList.remove("erro");
+    document.getElementById("erro").textContent = "";
+  });
+}
+
+function telaSucesso(nome, vaga) {
+  estado = "sucesso";
+  app.innerHTML = `
+    <svg class="check" viewBox="0 0 84 84"><circle cx="42" cy="42" r="38"/><path d="M26 43 l11 11 l21 -23"/></svg>
+    <h1>Prêmio garantido!</h1>
+    <p class="sub">Parabéns, <span class="nome-destaque">${esc(nome)}</span>. Seu nome já está na lista dos ganhadores.</p>
+    <span class="numero">Vaga nº ${vaga} de ${TOTAL_VAGAS}</span>
+    <p class="rodape">Mostre esta tela para a organização</p>`;
+}
+
+function telaEsgotado() {
+  estado = "esgotado";
+  app.innerHTML = `
+    <div class="icone fim">🏁</div>
+    <h1>Já temos os ${TOTAL_VAGAS} ganhadores!</h1>
+    <p class="sub">Não foi dessa vez. Todas as vagas foram preenchidas, mas fica de olho na próxima prova da gincana!</p>`;
+}
+
+function telaErroConfig() {
+  app.innerHTML = `<div class="icone fim">⚙️</div><h1>Quase lá</h1>
+    <p class="sub">Falta colar a configuração do Firebase no arquivo <b>firebase-config.js</b>.</p>`;
+}
+
+function mostrarErro(texto) {
+  const campo = document.getElementById("campo");
+  document.getElementById("erro").textContent = texto;
+  campo.classList.add("erro");
+  campo.classList.remove("tremer"); void campo.offsetWidth; campo.classList.add("tremer");
+}
+
+if (!firebaseConfig.projectId || firebaseConfig.projectId.includes("COLE_AQUI")) {
+  telaErroConfig();
+} else {
+  db = getFirestore(initializeApp(firebaseConfig));
+  const ja = lerParticipacao();
+  if (ja) telaSucesso(ja.nome, ja.vaga);
+
+  onSnapshot(collection(db, "vencedores"), snap => {
+    ocupadas = snap.size;
+    if (estado === "sucesso" || enviando) return;
+    if (ocupadas >= TOTAL_VAGAS) return telaEsgotado();
+    if (estado === "form") document.getElementById("vagas").innerHTML = pontos();
+    else telaFormulario();
+  }, () => {
+    if (estado === "carregando") app.innerHTML = `<div class="icone fim">📡</div><h1>Sem conexão</h1><p class="sub">Verifique a internet e abra o link de novo.</p>`;
+  });
+}
+
+async function enviar(e) {
+    e.preventDefault();
+    if (enviando) return;
+    const nome = document.getElementById("nome").value.trim().replace(/\s+/g, " ");
+    if (nome.length < 2) return mostrarErro("Digite seu nome para continuar.");
+
+    enviando = true;
+    const btn = document.getElementById("btn");
+    btn.disabled = true; btn.innerHTML = `<span class="spinner"></span>Enviando…`;
+
+    try {
+      const vaga = await runTransaction(db, async tx => {
+        for (let i = 1; i <= TOTAL_VAGAS; i++) {
+          const ref = doc(db, "vencedores", String(i));
+          const s = await tx.get(ref);
+          if (!s.exists()) {
+            tx.set(ref, { nome, vaga: i, criadoEm: serverTimestamp(), dispositivo: idDispositivo() });
+            return i;
+          }
+        }
+        return null;
+      });
+      enviando = false;
+      if (vaga === null) return telaEsgotado();
+      salvarParticipacao({ nome, vaga });
+      telaSucesso(nome, vaga);
+    } catch (err) {
+      enviando = false;
+      if (ocupadas >= TOTAL_VAGAS) return telaEsgotado();
+      btn.disabled = false; btn.textContent = "Garantir meu prêmio";
+      mostrarErro("Não deu certo agora. Tente de novo.");
+    }
+}
+</script>
+</body>
+</html>
