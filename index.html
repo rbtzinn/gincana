@@ -29,15 +29,13 @@
   }
   @keyframes entrar{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
 
-  .marca{display:block;height:34px;width:auto;margin:-8px auto 26px}
-  .icone{
-    width:84px;height:84px;margin:0 auto 22px;border-radius:24px;
-    display:grid;place-items:center;font-size:42px;
-    background:linear-gradient(145deg,#fff6d6,#ffe08a);
-    box-shadow:inset 0 0 0 1px rgba(0,0,0,.04);
-  }
-  .icone.ok{background:linear-gradient(145deg,#dcf8e3,#a8ecbb)}
-  .icone.fim{background:linear-gradient(145deg,#f2f2f5,#e3e3e8)}
+  .icone{width:84px;height:84px;margin:0 auto 22px;border-radius:24px;display:grid;place-items:center;background:#f2f2f7}
+  .icone svg{width:44px;height:44px;fill:none;stroke:#8e8e93;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .icone.laranja{background:#fff4e5} .icone.laranja svg{stroke:#ff9500}
+  .icone.azul{background:#eaf3ff} .icone.azul svg{stroke:var(--blue)}
+  .simbolo{width:96px;height:96px;margin:0 auto 20px;border-radius:28px;display:grid;place-items:center;
+    background:linear-gradient(160deg,#f7f9fd,#eef2f9);box-shadow:inset 0 0 0 1px rgba(0,0,0,.04)}
+  .simbolo img{width:60px;height:60px;object-fit:contain}
 
   h1{font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.02em}
   p.sub{margin-top:10px;font-size:17px;line-height:1.45;color:var(--muted)}
@@ -97,7 +95,6 @@
 </head>
 <body>
 <main class="card">
-  <img class="marca" src="assets/marca-compliance.png" alt="Compliance Suape">
   <div id="app">
   <div class="carregando"><div class="spinner"></div></div>
   </div>
@@ -110,6 +107,11 @@ import { getFirestore, collection, doc, onSnapshot, runTransaction, serverTimest
 import { firebaseConfig, TOTAL_VAGAS } from "./firebase-config.js";
 
 const app = document.getElementById("app");
+const ICONES = {
+  bandeira: `<svg viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 4.5c3-1.6 5.5 1.6 8 0s4.5-1 6 0v9c-1.5-1-3.5-1.6-6 0s-5 1.6-8 0"/></svg>`,
+  ajustes: `<svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>`,
+  semRede: `<svg viewBox="0 0 24 24"><path d="M2 8.5a15 15 0 0 1 4.5-2.8M10 5.1A15 15 0 0 1 22 8.5"/><path d="M5 12a10 10 0 0 1 4-2.2M14.5 9.9A10 10 0 0 1 19 12"/><path d="M8.5 15.5a5 5 0 0 1 7 0"/><path d="M12 19h.01"/><path d="M3 3l18 18"/></svg>`
+};
 const CHAVE = "gincana_participacao";
 let ocupadas = 0, estado = "carregando", enviando = false, db = null;
 
@@ -135,7 +137,7 @@ function pontos() {
 function telaFormulario() {
   estado = "form";
   app.innerHTML = `
-    <div class="icone">🎉</div>
+    <div class="simbolo"><img src="assets/simbolo-compliance.png" alt="Compliance Suape"></div>
     <h1>Você ganhou!</h1>
     <p class="sub">Só os ${TOTAL_VAGAS} primeiros levam. Coloque seu nome para garantir o prêmio.</p>
     <div id="vagas">${pontos()}</div>
@@ -168,13 +170,13 @@ function telaSucesso(nome, vaga) {
 function telaEsgotado() {
   estado = "esgotado";
   app.innerHTML = `
-    <div class="icone fim">🏁</div>
+    <div class="icone laranja">${ICONES.bandeira}</div>
     <h1>Já temos os ${TOTAL_VAGAS} ganhadores!</h1>
     <p class="sub">Não foi dessa vez. Todas as vagas foram preenchidas, mas fica de olho na próxima prova da gincana!</p>`;
 }
 
 function telaErroConfig() {
-  app.innerHTML = `<div class="icone fim">⚙️</div><h1>Quase lá</h1>
+  app.innerHTML = `<div class="icone azul">${ICONES.ajustes}</div><h1>Quase lá</h1>
     <p class="sub">Falta colar a configuração do Firebase no arquivo <b>firebase-config.js</b>.</p>`;
 }
 
@@ -209,7 +211,7 @@ if (!firebaseConfig.projectId || firebaseConfig.projectId.includes("COLE_AQUI"))
     if (estado === "form") document.getElementById("vagas").innerHTML = pontos();
     else telaFormulario();
   }, () => {
-    if (estado === "carregando") app.innerHTML = `<div class="icone fim">📡</div><h1>Sem conexão</h1><p class="sub">Verifique a internet e abra o link de novo.</p>`;
+    if (estado === "carregando") app.innerHTML = `<div class="icone">${ICONES.semRede}</div><h1>Sem conexão</h1><p class="sub">Verifique a internet e abra o link de novo.</p>`;
   });
 }
 

@@ -15,9 +15,13 @@
   .centro{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px}
   .card{background:var(--card);border-radius:24px;padding:24px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 10px 30px rgba(0,0,0,.05)}
   .login{width:100%;max-width:380px;text-align:center;padding:36px 26px}
-  .marca{display:block;height:30px;width:auto;margin:0 auto 24px}
-  .marca-topo{height:26px;margin:0 0 20px}
-  .login .cadeado{width:64px;height:64px;border-radius:20px;margin:0 auto 18px;background:#f0f0f3;display:grid;place-items:center;font-size:30px}
+  .simbolo{width:84px;height:84px;margin:0 auto 18px;border-radius:24px;display:grid;place-items:center;position:relative;
+    background:linear-gradient(160deg,#f7f9fd,#eef2f9);box-shadow:inset 0 0 0 1px rgba(0,0,0,.04)}
+  .simbolo img{width:52px;height:52px;object-fit:contain}
+  .simbolo .cad{position:absolute;right:-6px;bottom:-6px;width:32px;height:32px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+  .simbolo .cad svg{width:16px;height:16px;fill:none;stroke:#1d1d1f;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .titulo-painel{display:flex;align-items:center;gap:12px}
+  .titulo-painel img{width:36px;height:36px;object-fit:contain}
   h1{font-size:28px;font-weight:700;letter-spacing:-.02em}
   h2{font-size:20px;font-weight:700;letter-spacing:-.01em}
   .sub{color:var(--muted);font-size:15px;margin-top:6px}
@@ -79,8 +83,7 @@
 <!-- LOGIN -->
 <section id="telaLogin" class="centro escondido">
   <form class="card login" id="formLogin">
-    <img class="marca" src="assets/marca-compliance.png" alt="Compliance Suape">
-    <div class="cadeado">🔒</div>
+    <div class="simbolo"><img src="assets/simbolo-compliance.png" alt="Compliance Suape"><span class="cad"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span></div>
     <h1>Área do admin</h1>
     <p class="sub">Digite a senha para ver os ganhadores</p>
     <div style="margin-top:22px"><input id="senha" type="password" placeholder="Senha" autocomplete="current-password"></div>
@@ -91,9 +94,8 @@
 
 <!-- PAINEL -->
 <section id="telaPainel" class="wrap escondido">
-  <img class="marca marca-topo" src="assets/marca-compliance.png" alt="Compliance Suape">
   <div class="topo">
-    <h1>Ganhadores</h1>
+    <div class="titulo-painel"><img src="assets/simbolo-compliance.png" alt="Compliance Suape"><h1>Ganhadores</h1></div>
     <button class="btn cinza" id="btnSair">Sair</button>
   </div>
 
