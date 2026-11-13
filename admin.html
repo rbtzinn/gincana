@@ -167,7 +167,18 @@ $("formLogin").addEventListener("submit", async e => {
   if (!senha) { $("erroLogin").textContent = "Digite a senha."; return; }
   $("btnLogin").disabled = true; $("btnLogin").textContent = "Entrando…"; $("erroLogin").textContent = "";
   try { await signInWithEmailAndPassword(auth, ADMIN_EMAIL, senha); $("senha").value = ""; }
-  catch { $("erroLogin").textContent = "Senha incorreta."; }
+  catch (err) {
+    const c = err && err.code || "";
+    const msgs = {
+      "auth/invalid-credential": `Senha incorreta ou usuário ${ADMIN_EMAIL} não existe no Firebase.`,
+      "auth/wrong-password": "Senha incorreta.",
+      "auth/user-not-found": `O usuário ${ADMIN_EMAIL} não foi criado no Firebase.`,
+      "auth/operation-not-allowed": "Ative o login por E-mail/senha no Firebase.",
+      "auth/too-many-requests": "Muitas tentativas. Espere um pouco e tente de novo.",
+      "auth/network-request-failed": "Sem conexão com a internet."
+    };
+    $("erroLogin").textContent = msgs[c] || `Não foi possível entrar (${c || "erro desconhecido"}).`;
+  }
   $("btnLogin").disabled = false; $("btnLogin").textContent = "Entrar";
 });
 $("btnSair").onclick = () => signOut(auth);

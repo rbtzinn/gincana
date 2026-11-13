@@ -188,7 +188,17 @@ if (!firebaseConfig.projectId || firebaseConfig.projectId.includes("COLE_AQUI"))
 
   onSnapshot(collection(db, "vencedores"), snap => {
     ocupadas = snap.size;
-    if (estado === "sucesso" || enviando) return;
+    if (enviando) return;
+    if (estado === "sucesso") {
+      // Se o admin excluiu este celular da lista, libera para participar de novo
+      const p = lerParticipacao();
+      if (snap.metadata.fromCache || !p || Date.now() - (p.quando || 0) < 8000) return;
+      const meuId = idDispositivo();
+      let aindaNaLista = false;
+      snap.forEach(d => { const v = d.data(); if (v.dispositivo === meuId || (!p.quando && d.id === String(p.vaga))) aindaNaLista = true; });
+      if (aindaNaLista) return;
+      try { localStorage.removeItem(CHAVE); } catch {}
+    }
     if (ocupadas >= TOTAL_VAGAS) return telaEsgotado();
     if (estado === "form") document.getElementById("vagas").innerHTML = pontos();
     else telaFormulario();
@@ -221,7 +231,7 @@ async function enviar(e) {
       });
       enviando = false;
       if (vaga === null) return telaEsgotado();
-      salvarParticipacao({ nome, vaga });
+      salvarParticipacao({ nome, vaga, quando: Date.now() });
       telaSucesso(nome, vaga);
     } catch (err) {
       enviando = false;
