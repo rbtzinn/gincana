@@ -1,12 +1,11 @@
-// Cole aqui a configuração do seu projeto Firebase
-// (Console do Firebase > Configurações do projeto > Seus apps > Web > firebaseConfig)
+// Configuração do projeto Firebase "gincana-qrcode"
 export const firebaseConfig = {
-  apiKey: "COLE_AQUI",
-  authDomain: "COLE_AQUI.firebaseapp.com",
-  projectId: "COLE_AQUI",
-  storageBucket: "COLE_AQUI.appspot.com",
-  messagingSenderId: "COLE_AQUI",
-  appId: "COLE_AQUI"
+  apiKey: "AIzaSyAvZ3KSsyUPgxBaNcDn4hsR-IUA2j35yaQ",
+  authDomain: "gincana-qrcode.firebaseapp.com",
+  projectId: "gincana-qrcode",
+  storageBucket: "gincana-qrcode.firebasestorage.app",
+  messagingSenderId: "705909328896",
+  appId: "1:705909328896:web:2798db6ebcdb05c9c91ce5"
 };
 
 // E-mail do usuário admin criado em Authentication > Users.
